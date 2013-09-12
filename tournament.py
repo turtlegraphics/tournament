@@ -1,5 +1,27 @@
 # Tournament manager
-# Bryan Clair 2013
+# Bryan Clair Copyright 2013
+
+# Multi-round knockout tournament with possible byes.
+# Makes pairings, tracks results, selects next match.
+# The competitors in this tournament are called 'albums' because
+# this was written to manage a music play-off.
+
+# Tournament file format:
+"""
+    # header info
+    :tournament <albums> <name>
+    :round <name> <teams> <byes>
+    ...
+    :round <name> <teams> <byes>
+    # Album definitions
+    ALBUMFIRST <rating>
+    ...
+    ALBUMLAST <rating>
+    # Round by round results
+    :round <name>
+    ALBUMA beat ALBUMB
+    ...
+"""
 
 # Testing an edit conflict.
 import random
