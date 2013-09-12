@@ -1,0 +1,39 @@
+# Here's a little test file
+# for the parser, etc.
+
+# The 2013 Pac-12 tournament had 12 teams.  The first round had 4 byes.
+:tournament	12	2013 Pac-12 Tournament
+:round		1	12    4
+:round		Quarters     8    0
+:round		Semis	     4    0
+:round		Finals	     2	  0
+
+# Teams and ratings
+# Note that higher rated teams are better, so I've used the negative
+# of the seeds
+
+UCLA		-1
+Cal		-2
+Oregon		-3
+Arizona		-4
+Colorado	-5
+Washington	-6
+USC		-7
+Stanford	-8
+ASU		-9
+Utah		-10
+Washington St.	-11
+Oregon St.	-12
+
+# Results
+ 10 Utah beat   7 USC
+  9 ASU beat   8 Stanford
+  5 Colorado beat  12 Oregon St.
+  6 Washington beat  11 Washington St.
+  3 Oregon beat   6 Washington
+ 10 Utah beat   2 Cal
+  1 UCLA beat   9 ASU
+  4 Arizona beat   5 Colorado
+  1 UCLA beat   4 Arizona
+  3 Oregon beat  10 Utah
+  3 Oregon beat   1 UCLA
