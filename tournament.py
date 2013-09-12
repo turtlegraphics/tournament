@@ -22,6 +22,8 @@
     ALBUMA beat ALBUMB
     ...
 """
+# While a tournament <tourn> is in progress, there will be a file
+# <tourn>-nextmatch.txt that stores the next match to be played.
 
 import random
 import sys
