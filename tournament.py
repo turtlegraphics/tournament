@@ -1,6 +1,7 @@
 # Tournament manager
 # Bryan Clair 2013
 
+# Testing an edit conflict.
 import random
 import sys
 import os.path
