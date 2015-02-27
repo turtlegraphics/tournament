@@ -1,8 +1,10 @@
 # Tournament manager
-# Bryan Clair Copyright 2013
+# Bryan Clair Copyright 2013-2015
 
 # Multi-round knockout tournament with possible byes.
-# Makes pairings, tracks results, selects next match.
+# Makes pairings based off of ratings.
+# Tracks results, selects next match, updates ratings with ELO.
+
 # The competitors in this tournament are called 'albums' because
 # this was written to manage a music play-off.
 
