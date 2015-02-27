@@ -38,6 +38,33 @@ class ANSI:
     BRIGHTBLUE = '\033[94m'
     ENDC = '\033[0m'
 
+class ELO_Rater:
+    def __init__(self):
+        """Implement ELO rating system."""
+        self.set_parameters()
+
+    def set_parameters(self,spread=1.0,speed=.2):
+        """
+        spread : For each spread points of rating advantage, the chance of
+                 winning is doubled.
+        speed  : ELO's "K-factor", the maximum amount a match can affect
+                 the rating.
+        """
+        self.spread = spread
+        self.k = speed
+        
+    def rate(self,x,y):
+        """Return pair of new ratings given ratings of winner x and loser y."""
+        qx = 2 ** (x/self.spread)
+        qy = 2 ** (y/self.spread)
+        Ex = qx/(qx+qy)
+        Ey = qy/(qx+qy)
+        newx = x + self.k*(1.0 - Ex)
+        newy = y + self.k*(0.0 - Ey)
+        return (newx,newy)
+
+ELO = ELO_Rater()
+
 class Album:
     """Represents one album."""
     def __init__(self,name,rating,seed=None):
@@ -56,7 +83,7 @@ class Album:
         self.seed = int(seed)
 
     def __str__(self):
-        return "%3d %s" % (self.seed,self.name)
+        return "%3d %s (%.2f)" % (self.seed,self.name,self.rating)
 
 class Match:
     """Represents a match between entries."""
@@ -78,6 +105,8 @@ class Match:
             assert winner == self.b
             self.winner = self.b
             self.loser = self.a
+        (self.winner.rating,self.loser.rating) = ELO.rate(
+            self.winner.rating,self.loser.rating)
 
     def isMatch(self,t1,t2):
         """True if this is a match between t1 and t2"""
