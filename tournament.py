@@ -10,6 +10,7 @@
 """
     # header info
     :tournament <albums> <name>
+    :rate spread speed (this line is optional, see ELO_Rater for explanation)
     :round <name> <teams> <byes>
     ...
     :round <name> <teams> <byes>
@@ -70,6 +71,8 @@ class Album:
     def __init__(self,name,rating,seed=None):
         self.name = name
         self.rating = float(rating)
+        self.originalrating = self.rating
+
         if seed != None:
             self.seed = int(seed)
 
@@ -83,7 +86,7 @@ class Album:
         self.seed = int(seed)
 
     def __str__(self):
-        return "%3d %s (%.2f)" % (self.seed,self.name,self.rating)
+        return "%3d %s" % (self.seed,self.name)
 
 class Match:
     """Represents a match between entries."""
@@ -208,6 +211,7 @@ class Parser:
     Format -
     # header info
     :tournament <albums> <name>
+    :rate spread speed (this line is optional, see ELO_Rater for explanation)
     :round <name> <teams> <byes>
     ...
     :round <name> <teams> <byes>
@@ -234,6 +238,15 @@ class Parser:
         numalbums = int(trec[0])
         tour.setName(trec[1].rstrip())
         self.advance()
+
+        (rtype,rval) = self.curRecord()
+
+        # Possibly read :rate record
+        if rtype == 'rate':
+            rrec = rval.split()
+            ELO.set_parameters(spread = float(rrec[0]),
+                               speed = float(rrec[1]))
+            self.advance()
 
         # Read :round records
         (rtype,rval) = self.curRecord()
@@ -369,6 +382,10 @@ class Tournament:
         if self.complete:
             print 'Tournament Champion:', self.rounds[-1].winners()[0]
 
+    def displayAlbums(self):
+        for a in self.albums:
+            print a,'\t%.2f --> %.2f' % (a.originalrating,a.rating)
+
 class NextMatch:
     """Class manages the state of the upcoming/current match."""
     def __init__(self,basename):
@@ -403,7 +420,7 @@ class NextMatch:
                 pass
 
 def usage(msg=None):
-    print 'usage:',sys.argv[0],' <tournament-file>'
+    print 'usage:',sys.argv[0],'<tournament-file>'
     if msg:
         print '      ',msg
     sys.exit()
@@ -448,6 +465,7 @@ if __name__=="__main__":
         needNewMatch = True
 
     tourney.display()
+    tourney.displayAlbums()
 
     if needNewMatch:
         # Pick next match
