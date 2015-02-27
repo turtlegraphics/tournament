@@ -224,9 +224,9 @@ class Parser:
     ALBUMA beat ALBUMB
     ...
     """
-    def __init__(self,filename):
-        """Create a parser for a file."""
-        self.f = file(filename)
+    def __init__(self,inputfile):
+        """Create a parser for an open inputfile."""
+        self.f = inputfile
         self.advance()
 
     def parse(self,tour):
@@ -388,9 +388,8 @@ class Tournament:
 
 class NextMatch:
     """Class manages the state of the upcoming/current match."""
-    def __init__(self,basename):
-        (root,ext) = os.path.splitext(basename)
-        self.filename = root+'-nextmatch'+ext
+    def __init__(self,filename):
+        self.filename = filename
 
     def get(self,tour):
         """Return the next pending as a pair of albums, or (None,None)."""
@@ -419,30 +418,33 @@ class NextMatch:
             except:
                 pass
 
-def usage(msg=None):
-    print 'usage:',sys.argv[0],'<tournament-file>'
-    if msg:
-        print '      ',msg
-    sys.exit()
-    
 if __name__=="__main__":
     # Parse arguments
-    try:
-        filename = sys.argv[1]
-    except IndexError:
-        usage()
-    try:
-        assert(os.path.isfile(filename))
-    except:
-        usage('Bad tournament file: '+filename)
+    import argparse
+    aparser = argparse.ArgumentParser()
+    aparser.add_argument('tfile',help='tournament data file',
+                        type=argparse.FileType('r'))
+    aparser.add_argument('-l','--listall',help='list all albums',
+                        action='store_true')
+    aparser.add_argument('-n','--nextmatch',help='next match record file')
+    args = aparser.parse_args()
 
     # Create and read tournament data
     tourney = Tournament()
-    Parser(filename).parse(tourney)
+    Parser(args.tfile).parse(tourney)
 
     # Handle results of last match
+    #   Compute filename to use, either given by the --nextmatch
+    #   argument or else derive it from the tournament file
+    #
+    if args.nextmatch:
+        nextmatchfilename = args.nextmatch
+    else:
+        (root,ext) = os.path.splitext(args.tfile.name)
+        nextmatchfilename = root+'-nextmatch'+ext
+
     needNewMatch = True
-    next = NextMatch(filename)
+    next = NextMatch(nextmatchfilename)
     (a,b) = next.get(tourney)
     winner = None
     if a and b:
@@ -459,13 +461,16 @@ if __name__=="__main__":
     if winner:
         tourney.addResult(winner,loser)
         # Write result of the match
-        with open(filename,'a') as tfile:
+        with open(args.tfile.name,'a') as tfile:
             tfile.write(str(winner) + ' beat ' + str(loser) + '\n')
 
         needNewMatch = True
 
+    if args.listall:
+        tourney.displayAlbums()
+        print
+
     tourney.display()
-    tourney.displayAlbums()
 
     if needNewMatch:
         # Pick next match
