@@ -386,7 +386,13 @@ class Tournament:
 
     def displayAlbums(self):
         for a in self.albums:
-            print a,'\t%.2f --> %.2f' % (a.originalrating,a.rating)
+            out = str(a)+'\t'
+            rateout = '%.2f --> %.2f' % (a.originalrating,a.rating)
+            if a.originalrating < a.rating:
+                out += ANSI.GREEN + rateout + ANSI.BLACK
+            if a.originalrating > a.rating:
+                out += ANSI.RED + rateout + ANSI.BLACK
+            print out
 
 class NextMatch:
     """Class manages the state of the upcoming/current match."""
