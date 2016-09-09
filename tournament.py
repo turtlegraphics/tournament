@@ -118,6 +118,10 @@ class Match:
         return (((self.a == t1) and (self.b == t2))
                 or ((self.a == t2) and (self.b == t1)))
 
+    def isFinished(self):
+        """True if the match is finished (has winner)."""
+        return (self.winner != None)
+
     def __str__(self):
         out = ''
         if self.winner == self.a:
@@ -184,6 +188,14 @@ class Round:
                 return False
         return True
 
+    def pctFinished(self):
+        """Return the percent of finished matches."""
+        fin = 0
+        for m in self.matchups:
+            if m.isFinished():
+                fin += 1
+        return fin/float(len(self.matchups))
+
     def pickMatchup(self):
         """Pick an unresolved matchup."""
         assert(self.paired and not self.isFinished())
@@ -201,12 +213,15 @@ class Round:
         return [m.winner for m in self.matchups if m.winner]
             
     def display(self):
-        print 'Round:',self.name
+        print 'Round',self.name,
         if not self.paired:
-            print '       Not yet paired'
+            print ': Not yet paired'
         else:
+            print ':'
             for m in self.matchups:
                 print m
+            print 'Round',self.name,
+            print ': ' +str(round(self.pctFinished() * 100)) + '% Finished'
 
 class Parser:
     """Parse a tournament file.
